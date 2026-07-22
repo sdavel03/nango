@@ -42,7 +42,6 @@ export type ValidateEmailAndLogin = ApiEndpoint<{
         | ApiError<'error_refreshing_token'>;
     Success: {
         user: ApiUser;
-        showHearAboutUs?: boolean;
     };
 }>;
 
@@ -205,6 +204,18 @@ export type GetOnboardingHearAboutUs = ApiEndpoint<{
     Success: {
         data: {
             showHearAboutUs: boolean;
+        };
+    };
+}>;
+
+export type GetOnboardingAccountDiscovery = ApiEndpoint<{
+    Audit: { kind: 'no-audit'; reason: 'non-auditable' };
+    Method: 'GET';
+    Path: '/api/v1/account/onboarding/account-discovery';
+    Error: ApiError<'forbidden'>;
+    Success: {
+        data: {
+            suggestedAccountName: string | null;
         };
     };
 }>;
