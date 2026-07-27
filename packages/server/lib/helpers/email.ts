@@ -76,6 +76,31 @@ Team Nango</p>
     );
 }
 
+export async function sendAccountInvitationRequestEmail({
+    email,
+    account,
+    requester
+}: {
+    email: string;
+    account: Pick<DBTeam, 'name'>;
+    requester: Pick<DBUser, 'name' | 'email'>;
+}) {
+    const emailClient = EmailClient.getInstance();
+    await emailClient.send(
+        email,
+        `${requester.name} wants to join "${account.name}" on Nango`,
+        `<p>Hi,</p>
+
+<p><strong>${he.encode(requester.name)}</strong> (${he.encode(requester.email)}) has requested to join <strong>${he.encode(account.name)}</strong> on Nango.</p>
+
+<p>Their email address has been verified. To invite them, go to <a href="${basePublicUrl}/team-settings">Team Settings</a>.</p>
+
+<p>Best,<br>
+Team Nango</p>
+            `
+    );
+}
+
 export async function sendTrialAlmostOverEmail({ user, inDays }: { user: Pick<DBUser, 'name' | 'email'>; inDays: number }) {
     const emailClient = EmailClient.getInstance();
     await emailClient.send(
