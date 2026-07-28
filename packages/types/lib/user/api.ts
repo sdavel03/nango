@@ -1,4 +1,4 @@
-import type { ApiEndpoint, Endpoint } from '../api.js';
+import type { ApiEndpoint, ApiError, Endpoint } from '../api.js';
 import type { Role } from './db.js';
 
 export type GetUser = ApiEndpoint<{
@@ -40,6 +40,7 @@ export interface ApiUser {
     uuid: string;
     role: Role;
     gettingStartedClosed: boolean;
+    hasPassword: boolean;
 }
 
 export type AllowedPermissions = Partial<
@@ -56,5 +57,6 @@ export type PutUserPassword = ApiEndpoint<{
     Method: 'PUT';
     Path: `/api/v1/user/password`;
     Body: { oldPassword: string; newPassword: string };
+    Error: ApiError<'incorrect_password'>;
     Success: { success: true };
 }>;
