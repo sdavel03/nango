@@ -15,10 +15,7 @@ describe('Environment service', () => {
     it('should create a service with secrets', async () => {
         const account = await createAccount();
         const envName = uuid();
-        const env = await environmentService.createEnvironment(db.knex, { accountId: account.id, name: envName });
-        if (!env) {
-            throw new Error('failed_to_create_env');
-        }
+        const env = (await environmentService.createEnvironment(db.knex, { accountId: account.id, name: envName })).unwrap();
 
         expect(env).toStrictEqual({
             account_id: account.id,
@@ -55,16 +52,55 @@ describe('Environment service', () => {
 
     it('should set is_production = true when name is prod', async () => {
         const account = await createAccount();
-        const env = await environmentService.createEnvironment(db.knex, { accountId: account.id, name: 'prod' });
-        expect(env).not.toBeNull();
-        expect(env!.is_production).toBe(true);
+        const env = (await environmentService.createEnvironment(db.knex, { accountId: account.id, name: 'prod' })).unwrap();
+        expect(env.is_production).toBe(true);
     });
 
-    it('should set is_production = false for non-prod environments', async () => {
+    it('should set is_production = false by default when name is not prod', async () => {
         const account = await createAccount();
-        const env = await environmentService.createEnvironment(db.knex, { accountId: account.id, name: 'dev' });
-        expect(env).not.toBeNull();
-        expect(env!.is_production).toBe(false);
+        const env = (await environmentService.createEnvironment(db.knex, { accountId: account.id, name: 'dev' })).unwrap();
+        expect(env.is_production).toBe(false);
+    });
+
+    it('should reject creating environment named prod as a non-production environment', async () => {
+        const account = await createAccount();
+        const result = await environmentService.createEnvironment(db.knex, { accountId: account.id, name: 'prod', isProduction: false });
+        expect(result).toSatisfy((value) => value.isErr() && value.error.code === 'invalid_is_prod_flag');
+    });
+
+    it('should reject duplicate environment names', async () => {
+        const account = await createAccount();
+        const name = uuid();
+        await environmentService.createEnvironment(db.knex, { accountId: account.id, name });
+
+        const result = await environmentService.createEnvironment(db.knex, { accountId: account.id, name });
+
+        expect(result).toSatisfy((value) => value.isErr() && value.error.code === 'conflict');
+    });
+
+    it('should persist optional environment settings during creation', async () => {
+        const account = await createAccount();
+        const env = (
+            await environmentService.createEnvironment(db.knex, {
+                accountId: account.id,
+                name: uuid(),
+                isProduction: true,
+                callbackUrl: 'https://example.com/callback',
+                hmacKey: 'hmac-key',
+                hmacEnabled: true,
+                slackNotifications: true,
+                otlpSettings: { endpoint: 'https://otel.example.com', headers: { Authorization: 'Bearer token' } }
+            })
+        ).unwrap();
+
+        expect(env).toMatchObject({
+            is_production: true,
+            callback_url: 'https://example.com/callback',
+            hmac_key: 'hmac-key',
+            hmac_enabled: true,
+            slack_notifications: true,
+            otlp_settings: { endpoint: 'https://otel.example.com', headers: { Authorization: 'Bearer token' } }
+        });
     });
 
     describe('environment variables', () => {
