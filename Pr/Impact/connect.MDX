@@ -1,0 +1,124 @@
+title: 'Impact.com'
+sidebarTitle: 'Impact.com'
+description: 'Access the Impact.com API in 2 minutes 💨'
+---
+
+<Tabs>
+  <Tab title="🚀 Quickstart">
+    <Steps>
+      <Step title="Create an integration">
+        In Nango ([free signup](https://app.nango.dev)), go to [Integrations](https://app.nango.dev/dev/integrations) -> _Configure New Integration_ -> _Impact.com_.
+      </Step>
+      <Step title="Authorize Impact.com">
+        Go to [Connections](https://app.nango.dev/dev/connections) -> _Add Test Connection_ -> _Authorize_, then enter your Account SID and Auth Token. Later, you'll let your users do the same directly from your app.
+      </Step>
+      <Step title="Call the Impact.com API">
+        Let's make your first request to the Impact.com API (fetch your campaigns). Replace the placeholders below with your [secret key](https://app.nango.dev/dev/environment-settings), [integration ID](https://app.nango.dev/dev/integrations), [connection ID](https://app.nango.dev/dev/connections), and your Account SID:
+        <Tabs>
+            <Tab title="cURL">
+
+                ```bash
+                curl -X GET "https://api.nango.dev/proxy/Advertisers/<ACCOUNT-SID>/Campaigns" \
+                  -H "Authorization: Bearer <NANGO-SECRET-KEY>" \
+                  -H "Provider-Config-Key: <INTEGRATION-ID>" \
+                  -H "Connection-Id: <CONNECTION-ID>" \
+                  -H "Accept: application/json"
+                ```
+            </Tab>
+
+            <Tab title="Node">
+
+            Install Nango's backend SDK with `npm i @nangohq/node`. Then run:
+
+            ```typescript
+            import { Nango } from '@nangohq/node';
+
+            const nango = new Nango({ secretKey: '<NANGO-SECRET-KEY>' });
+
+            const res = await nango.get({
+              endpoint: '/Advertisers/<ACCOUNT-SID>/Campaigns',
+              providerConfigKey: '<INTEGRATION-ID>',
+              connectionId: '<CONNECTION-ID>',
+              headers: { accept: 'application/json' }
+            });
+
+            console.log(res.data);
+            ```
+            </Tab>
+
+        </Tabs>
+
+        Or fetch credentials dynamically via the [Node SDK](/reference/sdks/node#get-a-connection-with-credentials) or [API](/reference/api/connection/get).
+
+      </Step>
+    </Steps>
+
+    ✅ You're connected! Check the [Logs](https://app.nango.dev/dev/logs) tab in Nango to inspect requests.
+
+    <Tip>
+    Next step: [Embed the auth flow](/guides/primitives/auth) in your app to let your users connect their Impact.com accounts.
+    </Tip>
+  </Tab>
+  <Tab title="🔗 Useful links">
+    | Topic | Links |
+    | - | - |
+    | Authorization | [Guide to connect to Impact.com using Connect UI](/integrations/all/impact/connect) |
+    | General | [Impact.com Website](https://impact.com/) |
+    | | [Impact.com Dashboard](https://app.impact.com/) |
+    | Developer | [Impact.com API docs](https://integrations.impact.com/impact-brand/reference/overview) |
+    | | [API authentication](https://integrations.impact.com/impact-brand/reference/authentication) |
+    | | [Actions endpoint](https://integrations.impact.com/impact-brand/reference/get-actions) |
+
+    <Note>Contribute useful links by [editing this page](https://github.com/nangohq/nango/tree/master/docs/integrations/all/impact.mdx)</Note>
+  </Tab>
+  <Tab title="🚨 API gotchas">
+      - Impact.com uses HTTP Basic auth. The **Account SID** is the username and the **Auth Token** is the password.
+      - The Account SID also appears in the path of nearly every endpoint (`/Advertisers/{AccountSid}/...`), so it is needed twice: once as the credential and once in the request URL.
+      - The API defaults to XML. Send `Accept: application/json` on every request or you will get XML back.
+      - Responses are paginated with `Page` and `PageSize`, and the page count is returned in the body rather than in a header.
+      - Actions are provisional: a transaction can move between `PENDING`, `APPROVED` and `REVERSED` for weeks after the sale, so the same date range pulled twice can legitimately differ.
+
+    <Note>Contribute API gotchas by [editing this page](https://github.com/nangohq/nango/tree/master/docs/integrations/all/impact.mdx)</Note>
+  </Tab>
+</Tabs>
+
+<Info>
+    Questions? Join us in the [Slack community](https://nango.dev/slack).
+</Info>
+docs/integrations/all/impact/connect.mdx
+
+
+---
+title: Impact.com - How do I link my account?
+sidebarTitle: Impact.com
+---
+
+# Overview
+
+To authenticate with Impact.com, you need:
+1. **Account SID** - the identifier for your Impact.com account. It is also part of the URL of most API endpoints.
+2. **Auth Token** - the secret paired with that Account SID.
+
+This guide will walk you through finding both within Impact.com.
+
+### Prerequisites:
+
+- You must have an Impact.com account with access to Settings.
+
+#### Step 1: Finding Your Account SID and Auth Token
+1. Sign in to [Impact.com](https://app.impact.com/).
+2. Open **Settings** from the left-hand menu.
+3. Choose **API** (listed under Technical Settings).
+4. Your **Account SID** and **Auth Token** are both shown on this page.
+5. Copy them.
+
+<Tip>Impact.com uses Basic auth: the Account SID is the username and the Auth Token is the password. You do not need to combine or encode them yourself.</Tip>
+
+#### Step 2: Enter credentials in the Connect UI
+
+Once you have both values:
+1. Open the form where you need to authenticate with Impact.com.
+2. Enter your **Account SID** and your **Auth Token** in the designated fields.
+3. Submit the form, and you should be successfully authenticated.
+
+You are now connected to Impact.com.
