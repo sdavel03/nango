@@ -2532,6 +2532,26 @@ axiom:
             example: 'xaat-********-****-****-****-********8ec6'
             pattern: '^xaat-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
             doc_section: '#step-2-generating-your-api-token'
+awin:
+    display_name: Awin
+    categories:
+        - marketing
+    auth_mode: API_KEY
+    proxy:
+        base_url: https://api.awin.com
+        headers:
+            authorization: Bearer ${apiKey}
+        verification:
+            method: GET
+            endpoints:
+                - /accounts
+    docs: https://nango.dev/docs/integrations/all/awin
+    docs_connect: https://nango.dev/docs/integrations/all/awin/connect
+    credentials:
+        apiKey:
+            type: string
+            title: API Token
+            description: The OAuth2 token from Awin under Account → API credentials
 
 aws:
     display_name: AWS
@@ -10859,6 +10879,25 @@ hubstaff:
                 - 'x-rate-limit-reset'
     docs: https://nango.dev/docs/api-integrations/hubstaff
     setup_guide_url: https://nango.dev/docs/api-integrations/hubstaff/how-to-register-your-own-hubstaff-oauth-app
+
+impact:
+    display_name: Impact.com
+    categories:
+        - marketing
+    auth_mode: BASIC
+    proxy:
+        base_url: https://api.impact.com
+    docs: https://nango.dev/docs/integrations/all/impact
+    docs_connect: https://nango.dev/docs/integrations/all/impact/connect
+    credentials:
+        username:
+            type: string
+            title: Account SID
+            description: Your Impact Account SID, from Settings → API
+        password:
+            type: string
+            title: Auth Token
+            description: The Auth Token paired with that Account SID
 
 incident-io:
     display_name: Incident.io
