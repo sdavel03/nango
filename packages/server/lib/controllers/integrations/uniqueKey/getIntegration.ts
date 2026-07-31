@@ -5,7 +5,7 @@ import { zodErrorToHTTP } from '@nangohq/utils';
 
 import { integrationToPublicApi } from '../../../formatters/integration.js';
 import { providerConfigKeySchema } from '../../../helpers/validation.js';
-import { hasScope } from '../../../middleware/scope.middleware.js';
+import { hasAuthorizedScope } from '../../../middleware/scope.middleware.js';
 import { asyncWrapperWithEnvironment } from '../../../utils/asyncWrapper.js';
 
 import type { ApiPublicIntegrationInclude, GetPublicIntegration } from '@nangohq/types';
@@ -68,10 +68,7 @@ export const getPublicIntegration = asyncWrapperWithEnvironment<GetPublicIntegra
             ? `${getGlobalWebhookReceiveUrl()}/${environment.uuid}/${encodeURIComponent(integration.unique_key)}`
             : null;
     }
-    if (
-        queryInclude.has('credentials') &&
-        hasScope({ grantedScopes: res.locals['apiKeyScopes'] as string[] | undefined, requiredScope: 'environment:integrations:read_credentials' })
-    ) {
+    if (queryInclude.has('credentials') && hasAuthorizedScope({ locals: res.locals, requiredScope: 'environment:integrations:read_credentials' })) {
         if (provider.auth_mode === 'OAUTH1' || provider.auth_mode === 'OAUTH2' || provider.auth_mode === 'TBA') {
             include.credentials = {
                 type: provider.auth_mode,
