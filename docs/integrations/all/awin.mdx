@@ -1,0 +1,127 @@
+You're right, I didn't. Here they are.
+
+docs/integrations/all/awin.mdx
+
+
+---
+title: 'Awin'
+sidebarTitle: 'Awin'
+description: 'Access the Awin API in 2 minutes 💨'
+---
+
+<Tabs>
+  <Tab title="🚀 Quickstart">
+    <Steps>
+      <Step title="Create an integration">
+        In Nango ([free signup](https://app.nango.dev)), go to [Integrations](https://app.nango.dev/dev/integrations) -> _Configure New Integration_ -> _Awin_.
+      </Step>
+      <Step title="Authorize Awin">
+        Go to [Connections](https://app.nango.dev/dev/connections) -> _Add Test Connection_ -> _Authorize_, then enter your Awin API token. Later, you'll let your users do the same directly from your app.
+      </Step>
+      <Step title="Call the Awin API">
+        Let's make your first request to the Awin API (fetch the accounts your token can see). Replace the placeholders below with your [secret key](https://app.nango.dev/dev/environment-settings), [integration ID](https://app.nango.dev/dev/integrations), and [connection ID](https://app.nango.dev/dev/connections):
+        <Tabs>
+            <Tab title="cURL">
+
+                ```bash
+                curl -X GET "https://api.nango.dev/proxy/accounts" \
+                  -H "Authorization: Bearer <NANGO-SECRET-KEY>" \
+                  -H "Provider-Config-Key: <INTEGRATION-ID>" \
+                  -H "Connection-Id: <CONNECTION-ID>"
+                ```
+            </Tab>
+
+            <Tab title="Node">
+
+            Install Nango's backend SDK with `npm i @nangohq/node`. Then run:
+
+            ```typescript
+            import { Nango } from '@nangohq/node';
+
+            const nango = new Nango({ secretKey: '<NANGO-SECRET-KEY>' });
+
+            const res = await nango.get({
+              endpoint: '/accounts',
+              providerConfigKey: '<INTEGRATION-ID>',
+              connectionId: '<CONNECTION-ID>'
+            });
+
+            console.log(res.data);
+            ```
+            </Tab>
+
+        </Tabs>
+
+        Or fetch credentials dynamically via the [Node SDK](/reference/sdks/node#get-a-connection-with-credentials) or [API](/reference/api/connection/get).
+
+      </Step>
+    </Steps>
+
+    ✅ You're connected! Check the [Logs](https://app.nango.dev/dev/logs) tab in Nango to inspect requests.
+
+    <Tip>
+    Next step: [Embed the auth flow](/guides/primitives/auth) in your app to let your users connect their Awin accounts.
+    </Tip>
+  </Tab>
+  <Tab title="🔗 Useful links">
+    | Topic | Links |
+    | - | - |
+    | Authorization | [Guide to connect to Awin using Connect UI](/integrations/all/awin/connect) |
+    | General | [Awin Website](https://www.awin.com/) |
+    | | [Awin Dashboard](https://ui.awin.com/) |
+    | Developer | [Awin API docs](https://wiki.awin.com/index.php/Advertiser_API) |
+    | | [How to generate an API token](https://wiki.awin.com/index.php/API_get_started) |
+    | | [Publisher report endpoint](https://wiki.awin.com/index.php/Advertiser_API#Publisher_Report) |
+
+    <Note>Contribute useful links by [editing this page](https://github.com/nangohq/nango/tree/master/docs/integrations/all/awin.mdx)</Note>
+  </Tab>
+  <Tab title="🚨 API gotchas">
+      - Awin calls the credential an "OAuth2 token" in its UI, but it is a static bearer token: there is no authorization flow and it does not expire on its own. Paste it into Nango as an API key.
+      - Most reporting endpoints are scoped to one account, e.g. `/advertisers/{advertiserId}/reports/publisher`. The advertiser ID is not the same as your Awin login and is listed under `/accounts`.
+      - Affiliate transactions are provisional. The same month pulled twice can legitimately differ as transactions move between `pending`, `confirmed` and `declined`, so treat the pull date as part of what the numbers mean.
+      - Rate limits are applied per endpoint group and are not documented in the response headers.
+
+    <Note>Contribute API gotchas by [editing this page](https://github.com/nangohq/nango/tree/master/docs/integrations/all/awin.mdx)</Note>
+  </Tab>
+</Tabs>
+
+<Info>
+    Questions? Join us in the [Slack community](https://nango.dev/slack).
+</Info>
+docs/integrations/all/awin/connect.mdx
+
+
+---
+title: Awin - How do I link my account?
+sidebarTitle: Awin
+---
+
+# Overview
+
+To authenticate with Awin, you need:
+1. **API Token** - a token that grants Nango permission to read your Awin account's reporting data.
+
+This guide will walk you through generating an API token within Awin.
+
+### Prerequisites:
+
+- You must have an Awin advertiser or publisher account.
+
+#### Step 1: Generating Your API Token
+1. Sign in to the [Awin UI](https://ui.awin.com/).
+2. Open the user menu in the top right and choose **Account Settings**.
+3. Go to the **API credentials** tab.
+4. Click **Create a new token**.
+5. Copy the token that is shown.
+
+<Tip>Awin calls this an OAuth2 token, but there is no authorization flow — it is a static bearer token you paste in. Copy it now; Awin will not show it again.</Tip>
+
+#### Step 2: Enter credentials in the Connect UI
+
+Once you have your **API Token**:
+1. Open the form where you need to authenticate with Awin.
+2. Enter your **API Token** in the designated field.
+3. Submit the form, and you should be successfully authenticated.
+
+You are now connected to Awin.
+docs/integrations/all/impact.mdx
